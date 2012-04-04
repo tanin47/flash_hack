@@ -22,6 +22,12 @@ public class BitInputStream {
             this.in = new BufferedInputStream(in);
         }
     }
+    
+    public int readByte() throws IOException {
+        this.padding();
+
+        return this.in.read();
+    }
 
     public int readBit(int len) throws IOException {
 

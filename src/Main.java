@@ -17,7 +17,18 @@ public class Main {
 
         try {
 
-            InputStream in = new FileInputStream(new File("HelloWorld.swf"));
+//            new Swf("HelloWorld.swf").printStructure();
+//
+//            byte[] b = Swf.getBlock(82, "HelloWorld.swf");
+//            for (int i=0;i<b.length;i++) {
+//                System.out.print(toHex(b[i]) + " ");
+//            }
+//            System.out.println();
+            new Swf("HelloWorld.swf").inject("out2.swf", 82, Swf.getBlock(82, "Addition.swf"));
+            new Swf("Addition.swf").printStructure();
+            if (true) return;
+
+            InputStream in = new FileInputStream(new File("out.swf"));
 
             // General header
             System.out.print("Header: ");
@@ -36,15 +47,7 @@ public class Main {
             System.out.print("Length: " + fileLength + " (include the first 8 bytes, header and length)");
             System.out.println();
 
-
-
             InflaterInputStream zipIn = new InflaterInputStream(in);
-
-//            int count = 0;
-//            while (zipIn.read() >= 0) count++;
-//            System.out.println(count);
-            // count should equal length + 8
-
             BitInputStream bitIn = new BitInputStream(zipIn);
 
             int coordinateBitLength = bitIn.readBit(5);
@@ -71,8 +74,8 @@ public class Main {
                 int tagType = (header & 0xFFC0) >> 6;
                 int tagLengthBytes = header & 0x003F;
 
+                // variable-length block, we get the actual length
                 if (tagLengthBytes == 0x3F) {
-                    //System.out.println("variable-length");
                     tagLengthBytes = bitIn.readSignedInt(4);
                 }
 
@@ -84,7 +87,6 @@ public class Main {
                     System.out.print(toHex(bitIn.readUnsignedInt(1)) + " ");
                 }
                 System.out.println();
-//                bitIn.readBit(tagLengthBytes * 8);
 
                 System.out.println();
 
